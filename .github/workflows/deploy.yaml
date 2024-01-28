@@ -1,8 +1,4 @@
-name: Deploy| spotify-image-server
-
-defaults:
-  run:
-    working-directory: ./server
+name: Deploy| auth-server
 
 on:
   workflow_dispatch:
@@ -10,9 +6,9 @@ on:
   
 
 env:
-  SEARVICE_NAME: spotify-image-server
+  SEARVICE_NAME: authe-server
   DOCKER_PATH: ./docker/Dockerfile
-  IMAGE: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/go-cloudrun-container/spotify-image-server:${{ github.sha }}
+  IMAGE: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/go-cloudrun-container/auth-server:${{ github.sha }}
   GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
 
 jobs:
@@ -42,4 +38,7 @@ jobs:
           region: ${{ secrets.GCP_REGION }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           env_vars: |
-            DSN=${{ secrets.DSN }}
+            APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }} \
+            APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }} \
+            APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }} \
+            APPLE_SECRET=${{ secrets.APPLE_SECRET }} 

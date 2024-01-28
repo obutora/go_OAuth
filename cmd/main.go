@@ -122,13 +122,15 @@ func main() {
 		})
 
 		r.Post("/apple", func(w http.ResponseWriter, r *http.Request) {
-			log.Printf("apple auth request: %v", r.FormValue("code"))
+			code := r.FormValue("code")
+			log.Printf("apple auth request: %v",code)
 			log.Printf("apple auth request: %v", r.FormValue("state"))
-			
+
 			secret, err := apple.GenerateClientSecret(appleSecret, appleTeamId, appleClientId, appleKeyId)
 			if err != nil {
 				render.Status(r, http.StatusInternalServerError)
 				render.JSON(w, r, map[string]string{"error": err.Error()})
+				return
 			}
 
 			client := apple.New()
@@ -136,13 +138,17 @@ func main() {
 			vReq := apple.AppValidationTokenRequest{
 				ClientID:     appleClientId,
 				ClientSecret: secret,
-				Code:         "the_authorization_code_to_validate",
+				Code:         code,
 			}
 
 			var resp apple.ValidationResponse
 
 			// Do the verification
-			client.VerifyAppToken(r.Context(), vReq, &resp)
+			if err := client.VerifyAppToken(r.Context(), vReq, &resp); err != nil {
+				render.Status(r, http.StatusInternalServerError)
+				render.JSON(w, r, map[string]string{"error": err.Error()})
+				return
+			}
 
 			unique, _ := apple.GetUniqueID(resp.IDToken)
 			fmt.Printf("Unique ID: %s\n", unique)

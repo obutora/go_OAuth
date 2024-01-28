@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -130,7 +131,8 @@ func NewGoogleOAuthConfig() (*oauth2.Config, error) {
 	}
 	`, googleClientID, googleProjectID, googleClientSecret)
 
-	credBytes := []byte(cred)
+	r := strings.ReplaceAll(cred, "\n", "")
+	credBytes := []byte(r)
 	
 	config, err := google.ConfigFromJSON(credBytes, "https://www.googleapis.com/auth/userinfo.email")
 	if err != nil {

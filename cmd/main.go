@@ -76,10 +76,7 @@ func main() {
 	r.Route("/client", func(r chi.Router) {
 		r.Get("/gmail", func(w http.ResponseWriter, r *http.Request) {
 			url := googleConfig.AuthCodeURL("state", oauth2.AccessTypeOffline) // TODO stateの値を変更 + AccessTypeを変更
-			// http.Redirect(w, r, url, http.StatusFound)
-
-			render.Status(r, http.StatusOK)
-			render.JSON(w, r, map[string]string{"url": url})
+			http.Redirect(w, r, url, http.StatusFound)
 		})
 
 		r.Get("/apple", func(w http.ResponseWriter, r *http.Request) {
@@ -89,9 +86,8 @@ func main() {
 				"https://appleid.apple.com/auth/authorize?response_type=code&client_id=%v&redirect_uri=%v&state=%v&scope=name email&response_mode=form_post",
 				appleClientId, redirectUrl, state,
 			)
-			
-			render.Status(r, http.StatusOK)
-			render.JSON(w, r, map[string]string{"url": url})
+
+			http.Redirect(w, r, url, http.StatusFound)
 		})
 	})
 
@@ -124,6 +120,8 @@ func main() {
 		r.Post("/apple", func(w http.ResponseWriter, r *http.Request) {
 			code := r.FormValue("code")
 			log.Printf("apple auth request: %v",code)
+			
+			// TODO stateの検証
 			// log.Printf("apple auth request: %v", r.FormValue("state"))
 
 			appleSecret = strings.ReplaceAll(appleSecret, `\n`, "\n")
@@ -153,13 +151,12 @@ func main() {
 			fmt.Printf("Validation Response: %+v\n", resp)
 
 			unique, _ := apple.GetUniqueID(resp.IDToken)
-			// uid: 001108.ccb871fec8024c2f826ce2abfd7f0a74.0558
 			fmt.Printf("Unique ID: %s\n", unique)
 
+			// TODO JWT生成
 			render.JSON(w, r, map[string]string{
 				"token": resp.IDToken,
 				"uid": unique,
-				"resp": fmt.Sprintf("%+v", resp),
 			})
 
 		})

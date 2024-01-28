@@ -37,8 +37,9 @@ func init() {
 	if err := godotenv.Load("secret/.env"); err != nil {
 		log.Printf("failed to load .env file: %s", err.Error())
 	}
-
 		// Projectごとに設定すべきクレデンシャル群
+		origin = os.Getenv("ORIGIN")
+
 		googleClientID = os.Getenv("GOOGLE_CLIENT_ID")
 		googleClientSecret = os.Getenv("GOOGLE_CLIENT_SECRET")
 		googleProjectID = os.Getenv("GOOGLE_PROJECT_ID")

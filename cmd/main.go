@@ -73,8 +73,10 @@ func main() {
 		r.Get("/apple", func(w http.ResponseWriter, r *http.Request) {
 			state := "state" // TODO stateの値を変更
 			redirectUrl := fmt.Sprintf("%v/auth/apple", origin)
-			url := fmt.Sprintf("https://appleid.apple.com/auth/authorize?response_type=code&client_id=%v&redirect_uri=%v&state=%v&scope=name email&response_mode=form_post", 
-			appleClientId, redirectUrl, state)
+			url := fmt.Sprintf(
+				"https://appleid.apple.com/auth/authorize?response_type=code&client_id=%v&redirect_uri=%v&state=%v&scope=name email&response_mode=form_post",
+				appleClientId, redirectUrl, state,
+			)
 			
 			render.Status(r, http.StatusOK)
 			render.JSON(w, r, map[string]string{"url": url})

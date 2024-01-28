@@ -6,7 +6,7 @@ on:
   
 
 env:
-  SEARVICE_NAME: authe-server
+  SEARVICE_NAME: auth-server
   DOCKER_PATH: ./docker/Dockerfile
   IMAGE: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/go-cloudrun-container/auth-server:${{ github.sha }}
   GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
@@ -38,11 +38,11 @@ jobs:
           region: ${{ secrets.GCP_REGION }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           env_vars: |
-            ORIGIN=${{ secrets.ORIGIN_URL }} \
-            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
-            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
-            GOOGLE_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }} \
-            APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }} \
-            APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }} \
-            APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }} \
+            ORIGIN_URL=${{ secrets.ORIGIN_URL }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            GOOGLE_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
+            APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}
+            APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }}
+            APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }}
             APPLE_SECRET=${{ secrets.APPLE_SECRET }} 

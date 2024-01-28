@@ -103,10 +103,8 @@ func main() {
 		})
 	})
 
-	log.Printf("listen: %s", "8080")
-    if err := http.ListenAndServe("localhost:8080", r); err != nil {
-        log.Fatalf("!! %+v", err)
-    }
+	log.Printf("connect to http://localhost:%v/ playground", 8080)
+	http.ListenAndServe(":8080", r)
 }
 
 
@@ -133,7 +131,7 @@ func NewGoogleOAuthConfig() (*oauth2.Config, error) {
 
 	r := strings.ReplaceAll(cred, "\n", "")
 	credBytes := []byte(r)
-	
+
 	config, err := google.ConfigFromJSON(credBytes, "https://www.googleapis.com/auth/userinfo.email")
 	if err != nil {
 		return nil, err

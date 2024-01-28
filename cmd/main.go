@@ -126,6 +126,8 @@ func main() {
 			log.Printf("apple auth request: %v",code)
 			// log.Printf("apple auth request: %v", r.FormValue("state"))
 
+			appleSecret = strings.ReplaceAll(appleSecret, `\n`, "\n")
+
 			secret, err := apple.GenerateClientSecret(appleSecret, appleTeamId, appleClientId, appleKeyId)
 			if err != nil {
 				render.Status(r, http.StatusInternalServerError)
@@ -151,6 +153,7 @@ func main() {
 			fmt.Printf("Validation Response: %+v\n", resp)
 
 			unique, _ := apple.GetUniqueID(resp.IDToken)
+			// uid: 001108.ccb871fec8024c2f826ce2abfd7f0a74.0558
 			fmt.Printf("Unique ID: %s\n", unique)
 
 			render.JSON(w, r, map[string]string{

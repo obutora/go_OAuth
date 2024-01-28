@@ -1,0 +1,28 @@
+name: GAR Authentication
+description: GAR Authentication
+inputs:
+  sa-key:
+   description: Service Account Key Json
+   required: true
+  region:
+    description: GCP Region
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - id: "auth"
+      uses: "google-github-actions/auth@v2"
+      with:
+        credentials_json: "${{ inputs.sa-key }}"
+
+    - name: Login to GAR
+      uses: docker/login-action@v3
+      with:
+        registry: asia-northeast1-docker.pkg.dev
+        username: _json_key
+        password: ${{ inputs.sa-key }}
+
+    - name: Configure docker to use the gcloud cli
+      shell: bash
+      run: gcloud auth configure-docker ${{ inputs.region }}-docker.pkg.dev --quiet

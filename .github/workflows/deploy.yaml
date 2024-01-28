@@ -1,0 +1,45 @@
+name: Deploy| spotify-image-server
+
+defaults:
+  run:
+    working-directory: ./server
+
+on:
+  workflow_dispatch:
+  push:
+  
+
+env:
+  SEARVICE_NAME: spotify-image-server
+  DOCKER_PATH: ./docker/Dockerfile
+  IMAGE: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/go-cloudrun-container/spotify-image-server:${{ github.sha }}
+  GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+
+jobs:
+  deploy-to-cloud-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: GAR Authentication
+        uses: ./.github/actions/gar-authentication
+        with:
+          sa-key: ${{ env.GCP_SA_KEY }}
+          region: ${{ secrets.GCP_REGION }}
+
+      - name: Build a docker image
+        run: docker build -f ${{ env.DOCKER_PATH }} -t ${{ env.IMAGE }} .
+
+      - name: Push the docker image
+        run: docker push ${{ env.IMAGE }}
+
+      - name: Deploy to Cloud Run
+        uses: 'google-github-actions/deploy-cloudrun@v2'
+        with:
+          service: ${{ env.SEARVICE_NAME }}
+          image: ${{ env.IMAGE }}
+          region: ${{ secrets.GCP_REGION }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          env_vars: |
+            DSN=${{ secrets.DSN }}

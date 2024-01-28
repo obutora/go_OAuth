@@ -13,6 +13,7 @@ import (
 	v2 "google.golang.org/api/oauth2/v2"
 	"google.golang.org/api/option"
 
+	"github.com/Timothylock/go-signin-with-apple/apple"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -20,6 +21,8 @@ import (
 )
 
 var (
+	origin string
+
 	googleClientID string
 	googleClientSecret string
 	googleProjectID string
@@ -68,7 +71,9 @@ func main() {
 
 		r.Get("/apple", func(w http.ResponseWriter, r *http.Request) {
 			state := "state" // TODO stateの値を変更
-			url := fmt.Sprintf("https://appleid.apple.com/auth/authorize?response_type=code&client_id=%v&redirect_uri=YOUR_REDIRECT_URI&state=%v&scope=name email", appleClientId, state)
+			redirectUrl := fmt.Sprintf("%v/auth/apple", origin)
+			url := fmt.Sprintf("https://appleid.apple.com/auth/authorize?response_type=code&client_id=%v&redirect_uri=%v&state=%v&scope=name email&response_mode=form_post", 
+			appleClientId, redirectUrl, state)
 			
 			render.Status(r, http.StatusOK)
 			render.JSON(w, r, map[string]string{"url": url})
@@ -98,9 +103,39 @@ func main() {
 				"token": token.AccessToken,
 				"email": userInfo.Email,
 				"uid": userInfo.Id,
+			})
 		})
-		
+
+		r.Get("/apple", func(w http.ResponseWriter, r *http.Request) {
+			secret, err := apple.GenerateClientSecret(appleSecret, appleTeamId, appleClientId, appleKeyId)
+			if err != nil {
+				render.Status(r, http.StatusInternalServerError)
+				render.JSON(w, r, map[string]string{"error": err.Error()})
+			}
+
+			client := apple.New()
+
+			vReq := apple.AppValidationTokenRequest{
+				ClientID:     appleClientId,
+				ClientSecret: secret,
+				Code:         "the_authorization_code_to_validate",
+			}
+
+			var resp apple.ValidationResponse
+
+			// Do the verification
+			client.VerifyAppToken(r.Context(), vReq, &resp)
+
+			unique, _ := apple.GetUniqueID(resp.IDToken)
+			fmt.Printf("Unique ID: %s\n", unique)
+
+			render.JSON(w, r, map[string]string{
+				"token": resp.IDToken,
+				"uid": unique,
+			})
+
 		})
+
 	})
 
 	log.Printf("connect to http://localhost:%v/ playground", 8080)

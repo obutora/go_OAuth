@@ -38,7 +38,7 @@ jobs:
           region: ${{ secrets.GCP_REGION }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           env_vars: |
-            ORIGIN=${{ secrets.ORIGIN }} \
+            ORIGIN=${{ secrets.ORIGIN_URL }} \
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
             GOOGLE_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }} \

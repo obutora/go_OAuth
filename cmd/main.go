@@ -38,7 +38,7 @@ func init() {
 		log.Printf("failed to load .env file: %s", err.Error())
 	}
 		// Projectごとに設定すべきクレデンシャル群
-		origin = os.Getenv("ORIGIN")
+		origin = os.Getenv("ORIGIN_URL")
 
 		googleClientID = os.Getenv("GOOGLE_CLIENT_ID")
 		googleClientSecret = os.Getenv("GOOGLE_CLIENT_SECRET")

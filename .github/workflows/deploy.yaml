@@ -38,6 +38,9 @@ jobs:
           region: ${{ secrets.GCP_REGION }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           env_vars: |
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+            GOOGLE_PROJECT_IDL=${{ secrets.GCP_PROJECT_ID }} \
             APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }} \
             APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }} \
             APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }} \

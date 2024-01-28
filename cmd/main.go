@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -20,7 +19,9 @@ import (
 )
 
 var (
-	googleCredentialFile string
+	googleClientID string
+	googleClientSecret string
+	googleProjectID string
 
 	appleTeamId string
 	appleClientId string
@@ -34,7 +35,9 @@ func init() {
 	}
 
 		// Projectごとに設定すべきクレデンシャル群
-		googleCredentialFile = "secret/google_credential.json"
+		googleClientID = os.Getenv("GOOGLE_CLIENT_ID")
+		googleClientSecret = os.Getenv("GOOGLE_CLIENT_SECRET")
+		googleProjectID = os.Getenv("GOOGLE_PROJECT_ID")
 
 		appleTeamId = os.Getenv("APPLE_TEAM_ID")
 		appleClientId = os.Getenv("APPLE_CLIENT_ID")
@@ -108,18 +111,28 @@ func main() {
 
 // クレデンシャルを利用してOAuthの設定を作成
 func NewGoogleOAuthConfig() (*oauth2.Config, error) {
-	credFile, err := os.Open(googleCredentialFile)
-	if err != nil {
-		return nil, err
+	cred := fmt.Sprintf(`
+	{
+		"web": {
+			"client_id": "%v",
+			"project_id": "%v",
+			"auth_uri": "https://accounts.google.com/o/oauth2/auth",
+			"token_uri": "https://oauth2.googleapis.com/token",
+			"auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+			"client_secret": "%v",
+			"redirect_uris": [
+				"http://localhost:8080/auth/google"
+			],
+			"javascript_origins": [
+				"http://localhost:8080"
+			]
+		}
 	}
-	defer credFile.Close()
+	`, googleClientID, googleProjectID, googleClientSecret)
 
-	cred, err := io.ReadAll(credFile)
-	if err != nil {
-		return nil, err
-	}
+	credBytes := []byte(cred)
 	
-	config, err := google.ConfigFromJSON(cred, "https://www.googleapis.com/auth/userinfo.email")
+	config, err := google.ConfigFromJSON(credBytes, "https://www.googleapis.com/auth/userinfo.email")
 	if err != nil {
 		return nil, err
 	}

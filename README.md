@@ -29,4 +29,6 @@
 ## ライブラリ
 https://pkg.go.dev/golang.org/x/oauth
 
-## 
+https://github.com/Timothylock/go-signin-with-apple
+- p8ファイルが複数行であり、環境変数としてコンソールに指定する場合は問題なく動くが、CloudRunにデプロイするとアウト
+- Secret Managerを使えば成功する

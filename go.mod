@@ -5,6 +5,7 @@ go 1.21.0
 require (
 	github.com/Timothylock/go-signin-with-apple v0.2.0
 	github.com/go-chi/chi/v5 v5.0.11
+	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/render v1.0.3
 	github.com/joho/godotenv v1.5.1
 	golang.org/x/oauth2 v0.16.0
